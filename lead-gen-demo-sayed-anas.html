@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeadPilot AI — Demo for Sayed Anas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00e5a0;
+    --accent2: #6c63ff;
+    --accent3: #ff6b6b;
+    --text: #f0f0f5;
+    --muted: #6b6b80;
+    --whatsapp: #25d366;
+    --maps: #ea4335;
+    --insta: #e1306c;
+    --call: #4f9cf9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none; z-index: 0;
+  }
+  header { position: relative; z-index: 10; padding: 28px 32px 0; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulse 2s infinite; }
+  .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3); border-radius: 20px; padding: 6px 14px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1px; }
+  .live-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+  .hero { position: relative; z-index: 10; padding: 60px 32px 40px; max-width: 900px; margin: 0 auto; text-align: center; }
+  .hero-tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; border: 1px solid rgba(0,229,160,0.2); padding: 6px 16px; border-radius: 4px; margin-bottom: 24px; }
+  h1 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 6vw, 68px); font-weight: 800; line-height: 1.0; letter-spacing: -2px; margin-bottom: 20px; }
+  h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub { font-size: 16px; color: var(--muted); max-width: 500px; margin: 0 auto 40px; line-height: 1.6; }
+  .hero-sub strong { color: var(--text); }
+  .stats-row { display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.5px; }
+  .demo-container { position: relative; z-index: 10; max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+  .flow-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 32px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+  .flow-steps { display: flex; align-items: center; gap: 0; overflow-x: auto; padding-bottom: 8px; }
+  .flow-step { flex: 1; min-width: 120px; text-align: center; position: relative; }
+  .flow-step::after { content: '→'; position: absolute; right: -12px; top: 50%; transform: translateY(-60%); color: var(--muted); font-size: 18px; z-index: 2; }
+  .flow-step:last-child::after { display: none; }
+  .step-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 22px; }
+  .step-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .step-label strong { display: block; color: var(--text); font-size: 13px; margin-bottom: 2px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .panel-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .panel-body { padding: 20px; }
+  .scraper-controls { display: flex; gap: 8px; margin-bottom: 16px; }
+  .scraper-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 12px; outline: none; }
+  .scraper-input:focus { border-color: rgba(0,229,160,0.4); }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; transition: all 0.2s; white-space: nowrap; }
+  .btn-primary { background: var(--accent); color: #0a0a0f; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,229,160,0.3); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .leads-list { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; }
+  .lead-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; animation: slideIn 0.3s ease; cursor: pointer; transition: border-color 0.2s; }
+  .lead-item:hover { border-color: rgba(0,229,160,0.3); }
+  .lead-item.selected { border-color: var(--accent); background: rgba(0,229,160,0.05); }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .lead-icon { width: 36px; height: 36px; background: rgba(234,67,53,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .lead-info { flex: 1; min-width: 0; }
+  .lead-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lead-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .lead-badge { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; flex-shrink: 0; }
+  .badge-new { background: rgba(0,229,160,0.15); color: var(--accent); }
+  .badge-sent { background: rgba(37,211,102,0.15); color: var(--whatsapp); }
+  .badge-qualified { background: rgba(79,156,249,0.15); color: var(--call); }
+  .chat-window { background: #0d1117; border-radius: 12px; overflow: hidden; min-height: 380px; display: flex; flex-direction: column; }
+  .chat-header-bar { background: #1f2937; padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .chat-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, var(--whatsapp), #128c7e); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .chat-name-area strong { display: block; font-size: 13px; }
+  .chat-name-area span { font-size: 11px; color: var(--whatsapp); }
+  .chat-messages { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; overflow-y: auto; }
+  .msg { max-width: 82%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; animation: slideIn 0.3s ease; }
+  .msg-out { background: #005c4b; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .msg-in { background: #1f2937; align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg-time { font-size: 10px; color: rgba(255,255,255,0.4); text-align: right; margin-top: 4px; }
+  .typing-indicator { background: #1f2937; align-self: flex-start; padding: 12px 16px; border-radius: 12px; border-bottom-left-radius: 4px; display: none; margin: 0 16px 10px; }
+  .typing-dots { display: flex; gap: 4px; }
+  .typing-dots span { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: typingDot 1.2s infinite; }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingDot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-6px); opacity: 1; } }
+
+  /* MEETING BOOKING CARD */
+  .meeting-card { background: linear-gradient(135deg, rgba(0,229,160,0.1), rgba(108,99,255,0.08)); border: 1px solid rgba(0,229,160,0.3); border-radius: 12px; padding: 16px; margin: 8px 16px 16px; animation: slideIn 0.4s ease; }
+  .meeting-card-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+  .time-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .time-slot { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .time-slot:hover { border-color: var(--accent); color: var(--accent); }
+  .time-slot.selected-slot { background: rgba(0,229,160,0.15); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  .book-btn { width: 100%; background: var(--accent); color: #0a0a0f; border: none; border-radius: 8px; padding: 10px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .book-btn:hover { box-shadow: 0 4px 16px rgba(0,229,160,0.3); }
+  .book-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .booked-confirm { background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3); border-radius: 10px; padding: 14px; margin: 8px 16px 16px; text-align: center; animation: slideIn 0.4s ease; }
+  .booked-confirm .check { font-size: 28px; margin-bottom: 6px; }
+  .booked-confirm strong { display: block; font-family: 'Syne', sans-serif; font-size: 14px; color: var(--accent); }
+  .booked-confirm span { font-size: 12px; color: var(--muted); }
+
+  .qual-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 32px; }
+  .qual-flow { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; }
+  @media (max-width: 600px) { .qual-flow { grid-template-columns: 1fr; } }
+  .qual-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .qual-box-title { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 14px; text-transform: uppercase; }
+  .qual-criteria { display: flex; flex-direction: column; gap: 8px; }
+  .criteria-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .criteria-check { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+  .check-yes { background: rgba(0,229,160,0.2); color: var(--accent); }
+  .check-no { background: rgba(255,107,107,0.2); color: var(--accent3); }
+  .qual-arrow { text-align: center; font-size: 28px; color: var(--accent); }
+  .qual-result-num { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .qual-result-label { font-size: 12px; color: var(--muted); }
+  .dashboard-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 32px; }
+  .dash-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 600px) { .dash-metrics { grid-template-columns: repeat(2, 1fr); } }
+  .metric-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .metric-val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent); }
+  .metric-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .metric-change { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); margin-top: 6px; }
+  .channels { display: flex; flex-direction: column; gap: 12px; }
+  .channel-row { display: flex; align-items: center; gap: 12px; }
+  .channel-label { font-size: 12px; width: 80px; color: var(--muted); flex-shrink: 0; }
+  .channel-bar-wrap { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .channel-bar { height: 100%; border-radius: 4px; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); width: 0; }
+  .channel-num { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); width: 30px; text-align: right; flex-shrink: 0; }
+  .cta-section { background: linear-gradient(135deg, rgba(0,229,160,0.08), rgba(108,99,255,0.08)); border: 1px solid rgba(0,229,160,0.2); border-radius: 16px; padding: 40px 32px; text-align: center; }
+  .cta-section h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .cta-section p { color: var(--muted); margin-bottom: 28px; font-size: 15px; }
+  .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-cta-main { background: var(--accent); color: #0a0a0f; padding: 14px 28px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+  .btn-cta-main:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,160,0.3); }
+  .btn-cta-secondary { background: transparent; color: var(--text); padding: 14px 28px; border-radius: 10px; border: 1px solid var(--border); font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+  .btn-cta-secondary:hover { border-color: rgba(255,255,255,0.3); }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .scraper-status { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 12px; min-height: 16px; }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
+  .empty-state .icon { font-size: 32px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-dot"></div>LeadPilot AI</div>
+  <div class="live-badge"><div class="live-dot"></div>LIVE DEMO</div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">🎯 Personalized for Sayed Anas</div>
+  <h1>Leads on<br><span>Autopilot</span></h1>
+  <p class="hero-sub">
+    A system that <strong>finds leads automatically</strong>, sends messages, qualifies them,
+    and books meetings — from Google Maps to WhatsApp, without you lifting a finger.
+  </p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num" id="counter1">0</div><div class="stat-label">Leads / Day</div></div>
+    <div class="stat"><div class="stat-num" id="counter2">0%</div><div class="stat-label">Auto Qualify Rate</div></div>
+    <div class="stat"><div class="stat-num" id="counter3">0x</div><div class="stat-label">Faster than Manual</div></div>
+  </div>
+</div>
+
+<div class="demo-container">
+
+  <!-- FLOW -->
+  <div class="flow-section">
+    <div class="section-title">📍 How It Works — Full Pipeline</div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-icon" style="background:rgba(234,67,53,0.15)">🗺️</div>
+        <div class="step-label"><strong>Google Maps</strong>Find businesses</div>
+      </div>
+      <div class="flow-step">
+        <div class="step-icon" style="background:rgba(37,211,102,0.15)">💬</div>
+        <div class="step-label"><strong>WhatsApp</strong>Auto message sent</div>
+      </div>
+      <div class="flow-step">
+        <div class="step-icon" style="background:rgba(225,48,108,0.15)">📲</div>
+        <div class="step-label"><strong>Instagram DM</strong>Profile outreach</div>
+      </div>
+      <div class="flow-step">
+        <div class="step-icon" style="background:rgba(79,156,249,0.15)">📞</div>
+        <div class="step-label"><strong>AI Call</strong>Auto cold call</div>
+      </div>
+      <div class="flow-step">
+        <div class="step-icon" style="background:rgba(108,99,255,0.15)">🤖</div>
+        <div class="step-label"><strong>AI Qualify</strong>Budget & need check</div>
+      </div>
+      <div class="flow-step">
+        <div class="step-icon" style="background:rgba(0,229,160,0.15)">📅</div>
+        <div class="step-label"><strong>Book Meeting</strong>Auto calendar invite</div>
+      </div>
+      <div class="flow-step">
+        <div class="step-icon" style="background:rgba(0,229,160,0.2)">✅</div>
+        <div class="step-label"><strong>Hot Lead</strong>Delivered to you</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRAPER + CHAT -->
+  <div class="two-col">
+
+    <!-- GOOGLE MAPS SCRAPER -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🗺️ <span style="color:var(--maps)">Google Maps Scraper</span></div>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">All India</span>
+      </div>
+      <div class="panel-body">
+        <div class="scraper-controls">
+          <input class="scraper-input" id="categoryInput" type="text" placeholder="e.g. Restaurant, Hotel, Clinic..." value="Restaurant">
+          <button class="btn btn-primary" id="scrapeBtn" onclick="startScrape()">Scrape</button>
+        </div>
+        <div class="scraper-status" id="scraperStatus"></div>
+        <div class="leads-list" id="leadsList">
+          <div class="empty-state"><div class="icon">🔍</div>Enter a category and click Scrape</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHATSAPP CHAT -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">💬 <span style="color:var(--whatsapp)">WhatsApp Automation</span></div>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">AI Bot</span>
+      </div>
+      <div class="panel-body" style="padding:0">
+        <div class="chat-window">
+          <div class="chat-header-bar">
+            <div class="chat-avatar">🏢</div>
+            <div class="chat-name-area">
+              <strong id="chatBusinessName">Select a lead →</strong>
+              <span id="chatStatus">Waiting...</span>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="empty-state" style="padding:30px 16px"><div class="icon">👈</div>Select a lead from the left panel</div>
+          </div>
+          <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+          </div>
+          <div id="meetingBookingArea"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- QUALIFICATION -->
+  <div class="qual-section">
+    <div class="section-title">🤖 AI Qualification Engine</div>
+    <div class="qual-flow">
+      <div class="qual-box">
+        <div class="qual-box-title">Qualification Criteria</div>
+        <div class="qual-criteria">
+          <div class="criteria-item"><div class="criteria-check check-yes">✓</div>Does the business have a website?</div>
+          <div class="criteria-item"><div class="criteria-check check-yes">✓</div>Budget ₹5,000+/month?</div>
+          <div class="criteria-item"><div class="criteria-check check-yes">✓</div>Talking to the decision maker?</div>
+          <div class="criteria-item"><div class="criteria-check check-yes">✓</div>Ready to start within 1 month?</div>
+          <div class="criteria-item"><div class="criteria-check check-no">✗</div>Already working with someone?</div>
+        </div>
+      </div>
+      <div class="qual-arrow">⚡</div>
+      <div class="qual-box" style="text-align:center">
+        <div class="qual-box-title">Today's Result</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+          <div>
+            <div class="qual-result-num" style="color:var(--accent)" id="qualCount">0</div>
+            <div class="qual-result-label">Qualified ✅</div>
+          </div>
+          <div>
+            <div class="qual-result-num" style="color:var(--accent3)" id="disqualCount">0</div>
+            <div class="qual-result-label">Disqualified ❌</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:rgba(0,229,160,0.08);border-radius:8px;border:1px solid rgba(0,229,160,0.2)">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Ready for you</div>
+          <div id="hotLeadName" style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent)">—</div>
+          <div id="hotLeadDetail" style="font-size:11px;color:var(--muted);margin-top:2px">Start scraping to see results</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard-section">
+    <div class="section-title">📊 Live Dashboard — Your Control Panel</div>
+    <div class="dash-metrics">
+      <div class="metric-card"><div class="metric-val" id="m1">0</div><div class="metric-label">Total Leads Found</div><div class="metric-change">↑ updating...</div></div>
+      <div class="metric-card"><div class="metric-val" id="m2">0</div><div class="metric-label">Messages Sent</div><div class="metric-change" style="color:var(--whatsapp)">WhatsApp</div></div>
+      <div class="metric-card"><div class="metric-val" id="m3">0</div><div class="metric-label">Qualified Leads</div><div class="metric-change">Hot 🔥</div></div>
+      <div class="metric-card"><div class="metric-val" id="m4">0%</div><div class="metric-label">Conversion Rate</div><div class="metric-change">Industry avg: 8%</div></div>
+    </div>
+    <div class="channels">
+      <div class="channel-row"><div class="channel-label">Google Maps</div><div class="channel-bar-wrap"><div class="channel-bar" style="background:var(--maps)" id="bar1"></div></div><div class="channel-num" id="barNum1">0</div></div>
+      <div class="channel-row"><div class="channel-label">WhatsApp</div><div class="channel-bar-wrap"><div class="channel-bar" style="background:var(--whatsapp)" id="bar2"></div></div><div class="channel-num" id="barNum2">0</div></div>
+      <div class="channel-row"><div class="channel-label">Instagram</div><div class="channel-bar-wrap"><div class="channel-bar" style="background:var(--insta)" id="bar3"></div></div><div class="channel-num" id="barNum3">0</div></div>
+      <div class="channel-row"><div class="channel-label">AI Calls</div><div class="channel-bar-wrap"><div class="channel-bar" style="background:var(--call)" id="bar4"></div></div><div class="channel-num" id="barNum4">0</div></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <h2>Ready to automate<br>your lead generation?</h2>
+    <p>Sayed Anas, this system works for you 24/7 —<br>you only receive qualified leads with meetings already booked.</p>
+    <div class="cta-buttons">
+      <a href="https://wa.me/91XXXXXXXXXX?text=Hi%2C%20I%20saw%20the%20LeadPilot%20AI%20demo%20%E2%80%94%20I%27d%20like%20to%20discuss%20further" class="btn-cta-main">💬 Chat on WhatsApp</a>
+      <a href="#" class="btn-cta-secondary" onclick="alert('Book a free demo call!')">📞 Book a Free Demo Call</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const leadDatabase = {
+  "Restaurant": [
+    { name: "Spice Garden Restaurant", city: "Mumbai", phone: "+91-98201-XXXXX", rating: "4.2 ⭐", icon: "🍽️" },
+    { name: "Royal Dhaba & Restaurant", city: "Delhi", phone: "+91-98110-XXXXX", rating: "4.0 ⭐", icon: "🍛" },
+    { name: "The Grill House", city: "Bangalore", phone: "+91-80912-XXXXX", rating: "4.5 ⭐", icon: "🔥" },
+    { name: "Swad Punjab Da", city: "Chandigarh", phone: "+91-98766-XXXXX", rating: "3.9 ⭐", icon: "🌾" },
+    { name: "Biryani Zone", city: "Hyderabad", phone: "+91-98490-XXXXX", rating: "4.3 ⭐", icon: "🫕" },
+    { name: "Cafe Mocha Express", city: "Pune", phone: "+91-94221-XXXXX", rating: "4.1 ⭐", icon: "☕" },
+    { name: "Tandoor Palace", city: "Jaipur", phone: "+91-98291-XXXXX", rating: "4.4 ⭐", icon: "🫙" },
+  ],
+  "Hotel": [
+    { name: "Sunrise Business Hotel", city: "Ahmedabad", phone: "+91-98250-XXXXX", rating: "4.0 ⭐", icon: "🏨" },
+    { name: "Green Valley Resort", city: "Shimla", phone: "+91-98160-XXXXX", rating: "4.6 ⭐", icon: "🏔️" },
+    { name: "Metro Stay Inn", city: "Chennai", phone: "+91-98410-XXXXX", rating: "3.8 ⭐", icon: "🏩" },
+    { name: "Royal Palace Hotel", city: "Udaipur", phone: "+91-98291-XXXXX", rating: "4.7 ⭐", icon: "👑" },
+    { name: "Budget Comfort Stays", city: "Surat", phone: "+91-98240-XXXXX", rating: "3.7 ⭐", icon: "🛏️" },
+  ],
+  "Clinic": [
+    { name: "Dr. Sharma Dental Care", city: "Noida", phone: "+91-98100-XXXXX", rating: "4.5 ⭐", icon: "🦷" },
+    { name: "Wellness Multispeciality", city: "Bhopal", phone: "+91-98930-XXXXX", rating: "4.2 ⭐", icon: "🏥" },
+    { name: "City Skin Clinic", city: "Kolkata", phone: "+91-98300-XXXXX", rating: "4.3 ⭐", icon: "✨" },
+    { name: "Apollo Diagnostics", city: "Lucknow", phone: "+91-98390-XXXXX", rating: "4.6 ⭐", icon: "🔬" },
+  ],
+  "Salon": [
+    { name: "Glam Studio Salon", city: "Mumbai", phone: "+91-98201-XXXXX", rating: "4.4 ⭐", icon: "💇" },
+    { name: "Style Hub Unisex", city: "Bangalore", phone: "+91-98800-XXXXX", rating: "4.1 ⭐", icon: "✂️" },
+    { name: "Looks & Beauty Salon", city: "Jaipur", phone: "+91-98291-XXXXX", rating: "4.0 ⭐", icon: "💅" },
+    { name: "Mirror Mirror Salon", city: "Delhi", phone: "+91-98110-XXXXX", rating: "4.3 ⭐", icon: "🪞" },
+  ]
+};
+
+// Full English chat flow with meeting booking
+const chatFlow = [
+  { from: "bot",  text: "Hello! 👋 I'm an AI assistant. Does your business currently have a website?" },
+  { from: "lead", text: "No, not yet. We've been thinking about getting one..." },
+  { from: "bot",  text: "Great timing! I'm reaching out on behalf of Sayed Anas — we build professional websites starting at ₹5,000. What would your monthly budget be for this?" },
+  { from: "lead", text: "Somewhere between 5 to 10 thousand..." },
+  { from: "bot",  text: "Perfect, that works well! Are you the business owner or decision maker? I'd love to set up a quick 15-minute call with Sayed directly. 🤝" },
+  { from: "lead", text: "Yes, I'm the owner. You can call!" },
+  { from: "bot",  text: "Excellent! ✅ You're a great fit. Let me book a discovery call with Sayed Anas for you right now — please pick a time slot below 👇", isMeetingTrigger: true },
+];
+
+let currentLeads = [], selectedLead = null;
+let qualCount = 0, disqualCount = 0, totalLeads = 0, msgSent = 0;
+let selectedSlot = null;
+
+function animateCounter(el, target, suffix, duration) {
+  let start = 0;
+  const step = target / (duration / 16);
+  const timer = setInterval(() => {
+    start = Math.min(start + step, target);
+    el.textContent = Math.floor(start) + suffix;
+    if (start >= target) clearInterval(timer);
+  }, 16);
+}
+
+setTimeout(() => {
+  animateCounter(document.getElementById('counter1'), 150, '+', 1500);
+  animateCounter(document.getElementById('counter2'), 23, '%', 1500);
+  animateCounter(document.getElementById('counter3'), 40, 'x', 1500);
+}, 500);
+
+function startScrape() {
+  const category = document.getElementById('categoryInput').value.trim() || 'Restaurant';
+  const btn = document.getElementById('scrapeBtn');
+  const status = document.getElementById('scraperStatus');
+  const list = document.getElementById('leadsList');
+
+  btn.disabled = true;
+  currentLeads = []; list.innerHTML = '';
+  qualCount = 0; disqualCount = 0;
+  document.getElementById('qualCount').textContent = '0';
+  document.getElementById('disqualCount').textContent = '0';
+  document.getElementById('hotLeadName').textContent = '—';
+  document.getElementById('hotLeadDetail').textContent = 'Scraping...';
+
+  const msgs = [
+    `> Connecting to Google Maps API...`,
+    `> Searching "${category}" across India...`,
+    `> Found listings in 12 cities...`,
+    `> Extracting contact info...`,
+    `> Done! Leads ready.`
+  ];
+  let i = 0;
+  const t = setInterval(() => { status.textContent = msgs[i++]; if (i >= msgs.length) clearInterval(t); }, 400);
+
+  const rawLeads = leadDatabase[category] || leadDatabase['Restaurant'];
+  rawLeads.forEach((lead, idx) => {
+    setTimeout(() => {
+      currentLeads.push(lead);
+      const isQual = idx < rawLeads.length - 2;
+      if (isQual) {
+        qualCount++;
+        document.getElementById('qualCount').textContent = qualCount;
+        document.getElementById('hotLeadName').textContent = rawLeads[0].name;
+        document.getElementById('hotLeadDetail').textContent = rawLeads[0].city + ' — Budget confirmed ✅';
+      } else {
+        disqualCount++;
+        document.getElementById('disqualCount').textContent = disqualCount;
+      }
+      const item = document.createElement('div');
+      item.className = 'lead-item';
+      item.innerHTML = `
+        <div class="lead-icon">${lead.icon}</div>
+        <div class="lead-info">
+          <div class="lead-name">${lead.name}</div>
+          <div class="lead-detail">${lead.city} · ${lead.phone}</div>
+          <div class="lead-detail">${lead.rating}</div>
+        </div>
+        <div class="lead-badge ${isQual ? 'badge-qualified' : 'badge-sent'}">${isQual ? 'QUALIFIED' : 'SENT'}</div>
+      `;
+      item.onclick = () => selectLead(lead, item);
+      list.appendChild(item);
+      totalLeads++; msgSent++;
+      updateDashboard();
+      if (idx === rawLeads.length - 1) {
+        btn.disabled = false;
+        status.textContent = `✓ ${rawLeads.length} leads scraped & messages sent!`;
+        animateBars();
+      }
+    }, 300 + idx * 350);
+  });
+}
+
+function selectLead(lead, el) {
+  document.querySelectorAll('.lead-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedLead = lead;
+  startChat(lead);
+}
+
+function startChat(lead) {
+  document.getElementById('chatBusinessName').textContent = lead.name;
+  document.getElementById('chatStatus').textContent = 'Online now 🟢';
+  const messages = document.getElementById('chatMessages');
+  const typing = document.getElementById('typingIndicator');
+  const bookingArea = document.getElementById('meetingBookingArea');
+  messages.innerHTML = '';
+  bookingArea.innerHTML = '';
+  selectedSlot = null;
+
+  let i = 0;
+  function sendNext() {
+    if (i >= chatFlow.length) return;
+    const msg = chatFlow[i++];
+    typing.style.display = 'flex';
+    setTimeout(() => {
+      typing.style.display = 'none';
+      const div = document.createElement('div');
+      div.className = `msg msg-${msg.from === 'bot' ? 'out' : 'in'}`;
+      div.innerHTML = `${msg.text}<div class="msg-time">${getTime()}</div>`;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+      if (msg.isMeetingTrigger) {
+        setTimeout(() => showMeetingBooking(bookingArea, lead), 600);
+        return;
+      }
+      setTimeout(sendNext, 1300);
+    }, 800);
+  }
+  setTimeout(sendNext, 400);
+}
+
+function showMeetingBooking(container, lead) {
+  const slots = ['Tomorrow 10:00 AM', 'Tomorrow 2:00 PM', 'Wed 11:00 AM', 'Wed 4:00 PM'];
+  container.innerHTML = `
+    <div class="meeting-card">
+      <div class="meeting-card-title">📅 Book a Discovery Call with Sayed Anas</div>
+      <div class="time-slots" id="timeSlots">
+        ${slots.map(s => `<div class="time-slot" onclick="selectSlot(this, '${s}')">${s}</div>`).join('')}
+      </div>
+      <button class="book-btn" id="bookBtn" disabled onclick="confirmBooking('${lead.name}')">Select a time slot to confirm</button>
+    </div>
+  `;
+  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function selectSlot(el, slot) {
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected-slot'));
+  el.classList.add('selected-slot');
+  selectedSlot = slot;
+  const btn = document.getElementById('bookBtn');
+  btn.disabled = false;
+  btn.textContent = `Confirm — ${slot}`;
+}
+
+function confirmBooking(businessName) {
+  if (!selectedSlot) return;
+  const area = document.getElementById('meetingBookingArea');
+  area.innerHTML = `
+    <div class="booked-confirm">
+      <div class="check">🎉</div>
+      <strong>Meeting Confirmed!</strong>
+      <span>${businessName}</span>
+      <br><br>
+      <span style="color:var(--accent);font-weight:700">${selectedSlot}</span>
+      <br><span style="font-size:11px;margin-top:6px;display:block">Sayed Anas will call you at the confirmed time. A WhatsApp reminder will be sent 30 mins before.</span>
+    </div>
+  `;
+  // Update qualified count
+  qualCount = Math.max(qualCount, 1);
+  document.getElementById('qualCount').textContent = qualCount;
+  document.getElementById('m3').textContent = qualCount;
+}
+
+function getTime() {
+  const n = new Date();
+  return n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
+}
+
+function updateDashboard() {
+  document.getElementById('m1').textContent = totalLeads;
+  document.getElementById('m2').textContent = msgSent;
+  document.getElementById('m3').textContent = qualCount;
+  const rate = totalLeads > 0 ? Math.round((qualCount / totalLeads) * 100) : 0;
+  document.getElementById('m4').textContent = rate + '%';
+}
+
+function animateBars() {
+  [['bar1','barNum1',78,78],['bar2','barNum2',65,65],['bar3','barNum3',42,42],['bar4','barNum4',28,28]].forEach(([b,n,v,c]) => {
+    document.getElementById(b).style.width = v + '%';
+    animateCounter(document.getElementById(n), c, '', 1000);
+  });
+}
+</script>
+</body>
+</html>
